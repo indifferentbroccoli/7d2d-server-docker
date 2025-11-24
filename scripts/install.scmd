@@ -1,0 +1,20 @@
+// SteamCMD installation script for 7 Days to Die Dedicated Server
+// Do not shutdown on a failed command
+@ShutdownOnFailedCommand 0
+
+// No password as this is unattended
+@NoPromptForPassword 1
+
+// Set the game installation directory
+force_install_dir /7d2d
+
+// Login anonymously
+login anonymous
+
+// Install/Update the 7 Days to Die Dedicated Server
+// App ID: 294420
+// Validate ensures integrity of files
+app_update 294420 validate
+
+// Exit SteamCMD
+quit

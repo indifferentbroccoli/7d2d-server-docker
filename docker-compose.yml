@@ -1,0 +1,23 @@
+---
+services:
+  7d2d-server:
+    build: .
+    restart: unless-stopped
+    container_name: 7d2d-server
+    stop_grace_period: 30s
+    ports:
+      - '26900:26900/tcp'
+      - '26900:26900/udp'
+      - '26901:26901/udp'
+      - '26902:26902/udp'
+      - '8080:8080/tcp'
+      - '8081:8081/tcp'
+    environment:
+      PUID: 1000
+      PGID: 1000
+      GENERATE_SETTINGS: true
+    env_file:
+      - .env.example
+    volumes:
+      - ./7d2d/server-data:/7d2d
+      - ./7d2d/server-files:/home/steam/.local
