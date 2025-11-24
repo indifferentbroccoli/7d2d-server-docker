@@ -1,7 +1,7 @@
 ---
 services:
   7d2d-server:
-    build: .
+    image: indifferentbroccoli/7d2d-server-docker
     restart: unless-stopped
     container_name: 7d2d-server
     stop_grace_period: 30s
