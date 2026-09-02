@@ -3,7 +3,6 @@ source "/home/steam/server/functions.sh"
 
 config=/7d2d/serverconfig.xml
 
-SERVER_MAX_PLAYER_COUNT=${SERVER_MAX_PLAYER_COUNT:-$SERVER_MAX_PLAYERS}
 WEB_DASHBOARD_PORT=${WEB_DASHBOARD_PORT:-$CONTROL_PANEL_PORT}
 
 skipped=()
@@ -35,7 +34,7 @@ apply_setting "ServerPort"                         "$SERVER_PORT"
 apply_setting "ServerVisibility"                   "$SERVER_VISIBILITY"
 apply_setting "ServerDisabledNetworkProtocols"     "$SERVER_DISABLED_NETWORK_PROTOCOLS"
 apply_setting "ServerMaxWorldTransferSpeedKiBs"    "$SERVER_MAX_WORLD_TRANSFER_SPEED_KIBS"
-apply_setting "ServerMaxPlayerCount"               "$SERVER_MAX_PLAYER_COUNT"
+apply_setting "ServerMaxPlayerCount"               "$MAX_PLAYERS"
 apply_setting "ServerReservedSlots"                "$SERVER_RESERVED_SLOTS"
 apply_setting "ServerReservedSlotsPermission"      "$SERVER_RESERVED_SLOTS_PERMISSION"
 apply_setting "ServerAdminSlots"                   "$SERVER_ADMIN_SLOTS"

@@ -120,7 +120,7 @@ Server and container settings. Game settings are in
 | `SERVER_VISIBILITY` | `2` | `0` not listed, `1` friends only, `2` public |
 | `SERVER_DISABLED_NETWORK_PROTOCOLS` | `SteamNetworking` | Protocols to disable, comma separated |
 | `SERVER_MAX_WORLD_TRANSFER_SPEED_KIBS` | `512` | World transfer speed cap in KiB/s |
-| `SERVER_MAX_PLAYER_COUNT` | `8` | Maximum players |
+| `MAX_PLAYERS` | `8` | Maximum players |
 | `SERVER_RESERVED_SLOTS` | `0` | Slots reserved for players with permission |
 | `SERVER_RESERVED_SLOTS_PERMISSION` | `100` | Permission level needed for a reserved slot |
 | `SERVER_ADMIN_SLOTS` | `0` | Slots reserved for admins on top of the player count |
