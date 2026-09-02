@@ -63,6 +63,7 @@ services:
       PUID: 1000
       PGID: 1000
       GENERATE_SETTINGS: true
+      FORCE_UPDATE: ${FORCE_UPDATE:-false}
     env_file:
       - .env.example
     volumes:
@@ -99,7 +100,49 @@ docker run -d \
 
 ## Environment Variables
 
-See the [.env.example](.env.example) file for all available environment variables.
+Server and container settings. Game settings are in
+[.env.example](.env.example).
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `PUID` | `1000` | User ID the server runs as |
+| `PGID` | `1000` | Group ID the server runs as |
+| `GENERATE_SETTINGS` | `true` | Apply the .env settings to `serverconfig.xml` on start |
+| `FORCE_UPDATE` | `false` | Re-run DepotDownloader even when the server is already installed |
+| `GAME_VERSION` | *(empty)* | Steam branch to install, e.g. `latest_experimental`. Empty installs the public branch |
+| `GAME_VERSION_PASSWORD` | *(empty)* | Password for a private branch, if one is required |
+| `SERVER_NAME` | `My Game Host` | Name shown in the server browser |
+| `SERVER_DESCRIPTION` | `A 7 Days to Die server` | Description shown in the server browser. `\n` becomes a line break |
+| `SERVER_WEBSITE_URL` | *(empty)* | Website link shown in the server browser |
+| `SERVER_PASSWORD` | *(empty)* | Password required to join |
+| `SERVER_LOGIN_CONFIRMATION_TEXT` | *(empty)* | Message players must confirm before joining |
+| `SERVER_PORT` | `26900` | Game port. Also uses the next two UDP ports |
+| `SERVER_VISIBILITY` | `2` | `0` not listed, `1` friends only, `2` public |
+| `SERVER_DISABLED_NETWORK_PROTOCOLS` | `SteamNetworking` | Protocols to disable, comma separated |
+| `SERVER_MAX_WORLD_TRANSFER_SPEED_KIBS` | `512` | World transfer speed cap in KiB/s |
+| `SERVER_MAX_PLAYER_COUNT` | `8` | Maximum players |
+| `SERVER_RESERVED_SLOTS` | `0` | Slots reserved for players with permission |
+| `SERVER_RESERVED_SLOTS_PERMISSION` | `100` | Permission level needed for a reserved slot |
+| `SERVER_ADMIN_SLOTS` | `0` | Slots reserved for admins on top of the player count |
+| `SERVER_ADMIN_SLOTS_PERMISSION` | `0` | Permission level needed for an admin slot |
+| `SERVER_ALLOW_CROSSPLAY` | `false` | Allow crossplay clients |
+| `SERVER_MAX_ALLOWED_VIEW_DISTANCE` | `12` | Maximum view distance a client may request |
+| `REGION` | `NorthAmericaEast` | Region the server is listed under |
+| `LANGUAGE` | `English` | Server language |
+| `WEB_DASHBOARD_ENABLED` | `true` | Enable the web dashboard |
+| `WEB_DASHBOARD_PORT` | `8080` | Web dashboard port |
+| `WEB_DASHBOARD_URL` | *(empty)* | External URL of the dashboard, if behind a proxy |
+| `ENABLE_MAP_RENDERING` | `true` | Render the map for the web dashboard |
+| `TELNET_ENABLED` | `true` | Enable the telnet console |
+| `TELNET_PORT` | `8081` | Telnet port |
+| `TELNET_PASSWORD` | *(empty)* | Telnet password. Empty allows local connections only |
+| `TELNET_FAILED_LOGIN_LIMIT` | `10` | Failed telnet logins before an IP is blocked |
+| `TELNET_FAILED_LOGINS_BLOCKTIME` | `10` | How long a blocked telnet IP stays blocked, in seconds |
+| `TERMINAL_WINDOW_ENABLED` | `true` | Show the server terminal window |
+| `ADMIN_FILE_NAME` | `serveradmin.xml` | Admin file name, relative to the saves folder |
+| `EAC_ENABLED` | `true` | Enable Easy Anti-Cheat |
+| `IGNORE_EOS_SANCTIONS` | `false` | Ignore Epic Online Services sanctions |
+| `HIDE_COMMAND_EXECUTION_LOG` | `0` | `0` show all, `1` hide telnet/control panel, `2` also hide remote, `3` hide all |
 
 ### Building the image
 
@@ -121,14 +164,12 @@ Features basic checks that will confirm if the server can be started.
 Starts the server with the settings from the .env file.
 Will also call the `compile-server-settings.sh` script to generate the server configuration.
 
-#### install.scmd
-
-Installs the server. This script will download the server files using SteamCMD and extract them to the server directory.
-
 #### functions.sh
 
-Contains functions that are used in the other scripts including logging utilities and system checks.
+Contains functions that are used in the other scripts including logging
+utilities, system checks, the DepotDownloader install and graceful shutdown.
 
 #### compile-server-settings.sh
 
-Generates the `serverconfig.xml` file from the .env file.
+Applies the .env settings to `/7d2d/serverconfig.xml` with `xmlstarlet`, one
+`apply_setting` line per property.

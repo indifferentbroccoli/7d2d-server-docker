@@ -22,13 +22,16 @@ if cpu_check && memory_check; then
     LogSuccess "Compatibility checks passed"
 fi
 
-install
+install || exit 1
 
 # shellcheck disable=SC2317
 term_handler() {
-    LogWarn "SIGTERM received, shutting down server"
-    kill -SIGTERM "$(pidof 7DaysToDieServer.x86_64)"
-    tail --pid="$killpid" -f 2>/dev/null
+    if ! shutdown_server; then
+        kill -SIGTERM "$killpid"
+    fi
+
+    # Block until start.sh is gone so the game finishes saving before we exit
+    tail --pid="$killpid" -f /dev/null 2>/dev/null
 }
 
 trap 'term_handler' SIGTERM
@@ -36,6 +39,5 @@ trap 'term_handler' SIGTERM
 # Start the server
 ./start.sh &
 
-# Process ID of su
 killpid="$!"
 wait "$killpid"

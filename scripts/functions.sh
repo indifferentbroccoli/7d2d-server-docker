@@ -40,8 +40,69 @@ Log() {
 }
 
 install() {
+
+  if [ -f /7d2d/startserver.sh ] && [ "$FORCE_UPDATE" != "true" ]; then
+    LogInfo "Server files already present, skipping update (set FORCE_UPDATE=true to override)"
+    return 0
+  fi
+
   LogAction "Starting server install"
-  /home/steam/steamcmd/steamcmd.sh +runscript /home/steam/server/install.scmd
+  LogInfo "Installing 7 Days to Die Dedicated Server (branch: ${GAME_VERSION:-public})"
+
+  local beta=()
+  if [ -n "$GAME_VERSION" ]; then
+    beta=(-beta "$GAME_VERSION")
+    [ -n "$GAME_VERSION_PASSWORD" ] && beta+=(-betapassword "$GAME_VERSION_PASSWORD")
+  fi
+
+  /depotdownloader/DepotDownloader \
+    -app 294420 \
+    "${beta[@]}" \
+    -dir /7d2d \
+    -validate
+
+  if [ ! -f /7d2d/startserver.sh ]; then
+    LogError "DepotDownloader finished but /7d2d/startserver.sh is missing, the install failed"
+    return 1
+  fi
+
+  chmod +x /7d2d/startserver.sh /7d2d/7DaysToDieServer.x86_64 2>/dev/null
+  chown -R steam:steam /7d2d
+
+  LogSuccess "Server install complete"
+}
+
+# Attempt to shutdown the server gracefully
+# Returns 0 if it is shutdown
+# Returns 1 if it is not able to be shutdown
+shutdown_server() {
+  local return_val=0
+  LogAction "Attempting graceful server shutdown"
+
+  local pid
+  pid=$(pgrep -f "7DaysToDieServer.x86_64")
+
+  if [ -n "$pid" ]; then
+    kill -SIGTERM "$pid"
+
+    local count=0
+    while [ $count -lt 30 ] && kill -0 "$pid" 2>/dev/null; do
+      sleep 1
+      count=$((count + 1))
+    done
+
+    if kill -0 "$pid" 2>/dev/null; then
+      LogWarn "Server did not shutdown gracefully, forcing shutdown"
+      return_val=1
+    else
+      LogSuccess "Server shutdown gracefully"
+    fi
+  else
+    LogWarn "Server process not found"
+    return_val=1
+  fi
+
+  return "$return_val"
 }
 
 cpu_check(){
